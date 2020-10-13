@@ -1,5 +1,6 @@
 $(function(){
     
+    const carrousselSpeed = 300 
     $('.carroussel').each(function(i, carroussel){
         if(!$(this).data('index')){
             $(this).attr('data-index', 0)
@@ -56,7 +57,7 @@ $(function(){
             $carroussel.attr('data-index', newIndex)
             $carroussel.find('.carroussel-content').animate({
                 left : `-${largeurDefilement * newIndex}px`
-            }, 500, "swing")
+            }, carrousselSpeed, "swing")
 
             $('.carroussel-content').removeAttr('data-onmove')
             $('.carroussel-content').removeAttr('data-clientx')
@@ -90,7 +91,7 @@ $(function(){
         $carroussel.attr('data-index', index + 1)
         $carroussel.find('.carroussel-content').animate({
             left : `-=${largeurDefilement}px`
-        }, 500, "swing")
+        }, carrousselSpeed, "swing")
         $carroussel.removeData()
         checkIndexCarroussel($carroussel)
     }
@@ -101,7 +102,7 @@ $(function(){
         $carroussel.attr('data-index', index - 1)
         $carroussel.find('.carroussel-content').animate({
             left : `+=${largeurDefilement}px`
-        }, 500, "swing")
+        }, carrousselSpeed, "swing")
         $carroussel.removeData()
         checkIndexCarroussel($carroussel)
     }
