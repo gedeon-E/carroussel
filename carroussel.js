@@ -21,13 +21,14 @@ $(function(){
         }
     })
     $('.carroussel-content').mousedown(function(e){
-        $('.carroussel-content').attr('data-onmove', true)
+        $('.carroussel-content').attr('data-onmousedown', true)
         $('.carroussel-content').attr('data-clientx', e.clientX)
         $('.carroussel-content').attr('data-posleft', parseInt($(this).css('left')))
     })
     $('.carroussel-content').mousemove(function(e){
         $(this).removeData()
-        if($(this).data('onmove')){
+        if($(this).data('onmousedown')){
+            $('.carroussel-content').attr('data-moved', true)
             const curClientX = $(this).data('clientx')
             const posLeft = $(this).data('posleft')
             
@@ -41,14 +42,15 @@ $(function(){
     })
     $('.carroussel-content').mouseup(function(e){
         $(this).removeData()
-        if($(this).data('onmove')){
+        if($(this).data('moved')){
             const finalPos = parseInt($(this).css('left'))
             const nbreCarroussel = $(this).find('.carroussel-element').length ;
             const largeurDefilement = $(this).find('.carroussel-element').eq(0).outerWidth(true) ;
             const nbreCardShow = $(this).parents('.carroussel-wrapper').eq(0).innerWidth() / largeurDefilement ;
             
             let direction = ($(this).data('clientx') > e.clientX) ? 0 : 1 ;
-            let newIndex = Math.ceil(-finalPos / largeurDefilement) - direction
+            let newIndex = Math.round(
+                (-finalPos / largeurDefilement) + .2 )- direction
            
             if(newIndex < 0) newIndex = 0
             else if (newIndex >= nbreCarroussel - nbreCardShow ) newIndex = nbreCarroussel - nbreCardShow
@@ -59,11 +61,12 @@ $(function(){
                 left : `-${largeurDefilement * newIndex}px`
             }, carrousselSpeed, "swing")
 
-            $('.carroussel-content').removeAttr('data-onmove')
-            $('.carroussel-content').removeAttr('data-clientx')
-            $('.carroussel-content').removeAttr('data-posleft')
+            $('.carroussel-content').removeAttr('data-moved')
             checkIndexCarroussel($carroussel)
         }
+        $('.carroussel-content').removeAttr('data-onmousedown')
+        $('.carroussel-content').removeAttr('data-clientx')
+        $('.carroussel-content').removeAttr('data-posleft')
     })
     function checkIndexCarroussel($carroussel){
         const nbreCarroussel = $carroussel.find('.carroussel-element').length ;
@@ -85,6 +88,7 @@ $(function(){
     }
 
     function nextCarroussel($carroussel){
+        console.log('next')
         const largeurDefilement = $carroussel.find('.carroussel-element').eq(0).outerWidth(true) ;
         const index = $carroussel.data('index')
 
@@ -96,6 +100,7 @@ $(function(){
         checkIndexCarroussel($carroussel)
     }
     function prevCarroussel($carroussel){
+        console.log('prev')
         const largeurDefilement = $carroussel.find('.carroussel-element').eq(0).outerWidth(true) ;
         const index = $carroussel.data('index')
 
