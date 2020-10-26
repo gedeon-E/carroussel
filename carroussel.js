@@ -1,14 +1,31 @@
 $(function(){
     
     const carrousselSpeed = 300 
-    $('.carroussel').each(function(i, carroussel){
-        if(!$(this).data('index')){
-            $(this).attr('data-index', 0)
-            $(this).removeData()
-        }
+    init()
+
+    function init(){
         $('.carroussel .carroussel-content *').attr('draggable', false)
-        checkIndexCarroussel($(this))
-    })
+        $('.carroussel').each(function(i, carroussel){
+            if(!$(this).data('index')){
+                $(this).attr('data-index', 0)
+                $(this).removeData()
+            }
+            insertBille($(this))
+            checkIndexCarroussel($(this))
+        })
+    }
+
+    function insertBille($carroussel){
+        const nbreStep = getNbreStep($carroussel) ;
+        const $carrousselBille = $carroussel.find('.carroussel-bille').eq(0) ;
+        if($carrousselBille[0]){
+            for (let i = 1; i < nbreStep ; i++) {
+                const $carrousselBilleClone = $carrousselBille.clone() ;
+                $carroussel.find('.carroussel-billes').append($carrousselBilleClone)
+            }
+            $carrousselBille.addClass('target')
+        }
+    }
 
     $('.carroussel .carrousel-navigator-left').click(function(){
         if(!$(this).is('.carrousel-navigator-off')){
@@ -44,9 +61,10 @@ $(function(){
         $(this).removeData()
         if($(this).data('moved')){
             const finalPos = parseInt($(this).css('left'))
-            const nbreCarroussel = $(this).find('.carroussel-element').length ;
-            const largeurDefilement = $(this).find('.carroussel-element').eq(0).outerWidth(true) ;
-            const nbreCardShow = $(this).parents('.carroussel-wrapper').eq(0).innerWidth() / largeurDefilement ;
+            const $carroussel = $(this).parents('.carroussel').eq(0) ;
+            const nbreCarroussel = getNbreCarroussel($carroussel) ;
+            const nbreCardShow = getNbreCardShow($carroussel) 
+            const largeurDefilement = getLargeurDefilement($carroussel) 
             
             let direction = ($(this).data('clientx') > e.clientX) ? 0 : 1 ;
             let newIndex = Math.round(
@@ -55,7 +73,6 @@ $(function(){
             if(newIndex < 0) newIndex = 0
             else if (newIndex >= nbreCarroussel - nbreCardShow ) newIndex = nbreCarroussel - nbreCardShow
 
-            $carroussel = $(this).parents('.carroussel').eq(0)
             $carroussel.attr('data-index', newIndex)
             $carroussel.find('.carroussel-content').animate({
                 left : `-${largeurDefilement * newIndex}px`
@@ -69,27 +86,30 @@ $(function(){
         $('.carroussel-content').removeAttr('data-posleft')
     })
     function checkIndexCarroussel($carroussel){
-        const nbreCarroussel = $carroussel.find('.carroussel-element').length ;
-        const largeurDefilement = $carroussel.find('.carroussel-element').eq(0).outerWidth(true) ;
-        const nbreCardShow = $carroussel.find('.carroussel-wrapper').innerWidth() / largeurDefilement ;
+        const nbreCarroussel = getNbreCarroussel($carroussel) ;
+        const nbreCardShow = getNbreCardShow($carroussel) 
 
         $carroussel.removeData()
-        if($carroussel.data('index') == 0){
+        const targetIndex = $carroussel.data('index')
+        if(targetIndex == 0){
             $carroussel.find('.carrousel-navigator-left').addClass('carrousel-navigator-off')
         }else{
             $carroussel.find('.carrousel-navigator-left').removeClass('carrousel-navigator-off')
         }
 
-        if($carroussel.data('index') == nbreCarroussel - nbreCardShow){
+        if(targetIndex == nbreCarroussel - nbreCardShow){
             $carroussel.find('.carrousel-navigator-right').addClass('carrousel-navigator-off')
         }else{
             $carroussel.find('.carrousel-navigator-right').removeClass('carrousel-navigator-off')
         }
+
+        //set bille target
+        $carroussel.find('.carroussel-bille.target').removeClass('target') ;
+        $carroussel.find('.carroussel-bille').eq(targetIndex).addClass('target') ;
     }
 
     function nextCarroussel($carroussel){
-        console.log('next')
-        const largeurDefilement = $carroussel.find('.carroussel-element').eq(0).outerWidth(true) ;
+        const largeurDefilement = getLargeurDefilement($carroussel) ;
         const index = $carroussel.data('index')
 
         $carroussel.attr('data-index', index + 1)
@@ -100,8 +120,7 @@ $(function(){
         checkIndexCarroussel($carroussel)
     }
     function prevCarroussel($carroussel){
-        console.log('prev')
-        const largeurDefilement = $carroussel.find('.carroussel-element').eq(0).outerWidth(true) ;
+        const largeurDefilement = getLargeurDefilement($carroussel) ;
         const index = $carroussel.data('index')
 
         $carroussel.attr('data-index', index - 1)
@@ -110,5 +129,22 @@ $(function(){
         }, carrousselSpeed, "swing")
         $carroussel.removeData()
         checkIndexCarroussel($carroussel)
+    }
+    function getNbreCarroussel($carroussel){
+        return $carroussel.find('.carroussel-element').length
+    }
+    function getLargeurDefilement($carroussel){
+        return $carroussel.find('.carroussel-element').eq(0).outerWidth(true) ;
+    }
+    function getNbreCardShow($carroussel){
+        return $carroussel.find('.carroussel-wrapper').eq(0).innerWidth() / getLargeurDefilement($carroussel) ;
+    }
+    function getNbreStep($carroussel){
+        const nbreCarroussel = getNbreCarroussel($carroussel)
+        const nbreCardShow = getNbreCardShow($carroussel)
+        // const delta1 = nbreCarroussel % nbreCardShow
+        // const delta2 = Math.ceil(nbreCarroussel / nbreCardShow)
+        // return (delta2 * nbreCardShow) + delta1
+        return nbreCarroussel - nbreCardShow + 1
     }
 })

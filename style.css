@@ -66,3 +66,29 @@
 .carroussel .carrousel-navigator:focus{
     outline: none;
 }
+.carroussel-billes{
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.carroussel-bille{
+    width: 15px;
+    height: 15px;
+    background-color: #007bff;
+    content: "";
+    display: inline-block;
+    border-radius: 50%;
+    cursor: pointer;
+    transform-origin: center;
+    transform: scale(0.6);
+    opacity: 0.5;
+    transition: all 0.2s ease-in-out;
+}
+.carroussel-bille:hover{
+    opacity: 1;
+}
+.carroussel-bille.target{
+    transform: scale(1);
+    opacity: 1;
+}
