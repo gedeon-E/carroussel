@@ -37,11 +37,16 @@ $(function(){
             nextCarroussel($(this).parents('.carroussel').eq(0)) ;
         }
     })
+
+    $('.carroussel-content').on('touchstart', function(e){
+        $(this).trigger('mousedown')
+    })
     $('.carroussel-content').mousedown(function(e){
         $('.carroussel-content').attr('data-onmousedown', true)
         $('.carroussel-content').attr('data-clientx', e.clientX)
         $('.carroussel-content').attr('data-posleft', parseInt($(this).css('left')))
     })
+
     $('.carroussel-content').mousemove(function(e){
         $(this).removeData()
         if($(this).data('onmousedown')){
@@ -53,6 +58,17 @@ $(function(){
                 left : `${posLeft + e.clientX - curClientX}px`
             })
         }
+    })
+    $('.carroussel-content').on('touchmove', function(e){
+        $(this).trigger('mousemove')
+    })
+
+
+    $('.carroussel-content').on('touchleave', function(e){
+        $(this).trigger('mouseup')
+    })
+    $('.carroussel-content').on('touchend', function(e){
+        $(this).trigger('mouseup')
     })
     $('.carroussel-content').mouseleave(function(){
         $(this).trigger('mouseup')
