@@ -15,18 +15,6 @@ $(function(){
         })
     }
 
-    function insertBille($carroussel){
-        const nbreStep = getNbreStep($carroussel) ;
-        const $carrousselBille = $carroussel.find('.carroussel-bille').eq(0) ;
-        if($carrousselBille[0]){
-            for (let i = 1; i < nbreStep ; i++) {
-                const $carrousselBilleClone = $carrousselBille.clone() ;
-                $carroussel.find('.carroussel-billes').append($carrousselBilleClone)
-            }
-            $carrousselBille.addClass('target')
-        }
-    }
-
     $('.carroussel .carrousel-navigator-left').click(function(){
         if(!$(this).is('.carrousel-navigator-off')){
             prevCarroussel($(this).parents('.carroussel').eq(0)) ;
@@ -101,6 +89,40 @@ $(function(){
         $('.carroussel-content').removeAttr('data-clientx')
         $('.carroussel-content').removeAttr('data-posleft')
     })
+
+    $('.carroussel').delegate('.carroussel-bille', 'click', function(){
+        const $carroussel = $(this).parents('.carroussel').eq(0) ;
+        $carroussel.removeData()
+        const index = $carroussel.data('index')
+        const targetIndex = $(this).data('index')
+
+        if(targetIndex != index){
+            const largeurDefilement = getLargeurDefilement($carroussel) ;
+    
+            $carroussel.attr('data-index', targetIndex)
+            $carroussel.find('.carroussel-content').animate({
+                left : `-=${largeurDefilement * (targetIndex - index) }px`
+            }, carrousselSpeed, "swing")
+            $carroussel.removeData()
+    
+            checkIndexCarroussel($carroussel)
+        }
+    })
+
+    function insertBille($carroussel){
+        const nbreStep = getNbreStep($carroussel) ;
+        const $carrousselBille = $carroussel.find('.carroussel-bille').eq(0) ;
+        if($carrousselBille[0]){
+            for (let i = 1; i < nbreStep ; i++) {
+                const $carrousselBilleClone = $carrousselBille.clone() ;
+                $carrousselBilleClone.attr('data-index', i)
+                $carroussel.find('.carroussel-billes').append($carrousselBilleClone)
+            }
+            $carrousselBille.addClass('target')
+            $carrousselBille.attr('data-index', 0)
+        }
+    }
+
     function checkIndexCarroussel($carroussel){
         const nbreCarroussel = getNbreCarroussel($carroussel) ;
         const nbreCardShow = getNbreCardShow($carroussel) 
@@ -163,4 +185,6 @@ $(function(){
         // return (delta2 * nbreCardShow) + delta1
         return nbreCarroussel - nbreCardShow + 1
     }
+
+    
 })
